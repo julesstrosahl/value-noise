@@ -1,23 +1,23 @@
 const vnoiseGridStep = 1;
+// Currently can not be changed
 const vnoiseGridDims = 3;
 let vnoiseGridSize = 0;
 const vnoiseGrid = [];
 
-function populateVNoiseGrid(newSize = vnoiseGridSize) {
-  for (let ox = 0; ox < vnoiseGridSize; ox += vnoiseGridStep) {
-    const row = vnoiseGrid[ox];
-    for (let oy = vnoiseGridSize; oy < newSize; oy += vnoiseGridStep) {
-      row.push(random());
+function populateVNoiseGrid(
+  size = vnoiseGridSize,
+  dims = vnoiseGridDims,
+  subgrid = []
+) {
+  for (let i = 0; i < size; i++) {
+    if (i < subgrid.length) {
+      if (dims <= 1) continue;
+      buildGrid(size, dims - 1, subgrid[i]);
+    } else {
+      subgrid.push(dims > 1 ? buildGrid(size, dims - 1) : random());
     }
   }
-  for (let ox = vnoiseGridSize; ox < newSize; ox += vnoiseGridStep) {
-    const row = [];
-    vnoiseGrid.push(row);
-    for (let oy = 0; oy < newSize; oy += vnoiseGridStep) {
-      row.push(random());
-    }
-  }
-  vnoiseGridSize = newSize;
+  return subgrid;
 }
 
 const smoothstep = (x) => 3 * Math.pow(x, 2) - 2 * Math.pow(x, 3);
@@ -46,20 +46,25 @@ function vnoise(...coords) {
   return lerp(v12, v34, ypos);
 }
 
-const gridSize =5;
-const noiseScale = .005;
+const gridSize = 5;
+const noiseScale = 0.005;
 
 function setup() {
   createCanvas(innerWidth, innerHeight);
   noStroke();
   colorMode(HSB);
+
+  let a = buildGrid(3, 3);
+  console.log(JSON.parse(JSON.stringify(a)));
+  buildGrid(4, 3, a);
+  console.log(a);
 }
 
 function draw() {
-  for(let x=0;x<width;x+=gridSize) {
-    for(let y=0;y<height;y+=gridSize) {
-      fill(vnoise(x*noiseScale,y*noiseScale)*360,75,75);
-      square(x,y,gridSize);
-    }
-  }
+  // for(let x=0;x<width;x+=gridSize) {
+  //   for(let y=0;y<height;y+=gridSize) {
+  //     fill(vnoise(x*noiseScale,y*noiseScale)*360,75,75);
+  //     square(x,y,gridSize);
+  //   }
+  // }
 }
