@@ -60,20 +60,27 @@ function vnoise(...coords) {
   return sampleGrid(coords);
 }
 
-const gridSize = 10;
+const gridSize = 50;
 const noiseScale = 0.005;
+const timeScale = 0.05;
+let time = 0;
 
 function setup() {
   createCanvas(innerWidth, innerHeight);
   noStroke();
   colorMode(HSB);
+}
 
+function draw() {
+  time += 1;
   for (let x = 0; x < width; x += gridSize) {
     for (let y = 0; y < height; y += gridSize) {
-      fill(vnoise(x * noiseScale, y * noiseScale) * 360, 75, 75);
+      fill(
+        vnoise(x * noiseScale, y * noiseScale, time * timeScale) * 360,
+        75,
+        75
+      );
       square(x, y, gridSize);
     }
   }
 }
-
-function draw() {}
