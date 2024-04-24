@@ -1,6 +1,10 @@
-const vnoiseGridStep = 1;
+// Simplified implementatitons outperform p5
+const lerp = (a, b, t) => a + (b - a) * t;
+const fract = (x) => x % 1;
+
 // Currently can not be changed
 const vnoiseGridDims = 3;
+
 const vnoiseGridSizes = Array(vnoiseGridDims).fill(0);
 const vnoiseGrid = [];
 
@@ -43,7 +47,6 @@ function sampleGrid(
       subgrid = subgrid[i];
     }
   }
-  console.log(coords, subgrid, dims);
 
   if (dims === 1) {
     return lerp(subgrid[i1], subgrid[i2], lerpAmount);
@@ -55,6 +58,23 @@ function sampleGrid(
   );
 }
 
+function resetLastDim(newStartI, subgrid = vnoiseGrid, dims = vnoiseGridDims) {
+  if (dims > 1) {
+    for (const subgrid2 of subgrid) {
+      resetLastDim(newStartI, subgrid2, dims - 1);
+    }
+    return;
+  }
+  let i = 0;
+  for (let oldi = newStartI; oldi < subgrid.length; oldi++) {
+    subgrid[i] = subgrid[oldi];
+    i++;
+  }
+  for (; i < subgrid.length; i++) {
+    subgrid[i] = random();
+  }
+}
+
 function vnoise(...coords) {
   for (let i = coords.length; i < vnoiseGridDims; i++) {
     coords.push(0);
@@ -62,9 +82,10 @@ function vnoise(...coords) {
   return sampleGrid(coords);
 }
 
-const gridSize = 50;
+const gridSize = 10;
 const noiseScale = 0.005;
 const timeScale = 0.05;
+const maxTime = 6000;
 let time = 0;
 
 function setup() {
@@ -75,10 +96,16 @@ function setup() {
 
 function draw() {
   time += 1;
+  if (time >= maxTime) {
+    resetLastDim(floor(time * timeScale));
+    time %= maxTime;
+  }
+  const scaledTime = time * timeScale;
+
   for (let x = 0; x < width; x += gridSize) {
     for (let y = 0; y < height; y += gridSize) {
       fill(
-        vnoise(x * noiseScale, y * noiseScale, time * timeScale) * 360,
+        floor(vnoise(x * noiseScale, y * noiseScale, scaledTime) * 360),
         75,
         75
       );
