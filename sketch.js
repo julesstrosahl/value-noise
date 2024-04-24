@@ -1,11 +1,12 @@
 const vnoiseGridStep = 1;
+const vnoiseGridDims = 3;
 let vnoiseGridSize = 0;
 const vnoiseGrid = [];
 
-function populateVNoiseGrid(newSize=vnoiseGridSize) {
-  for(let ox=0;ox<vnoiseGridSize;ox+=vnoiseGridStep) {
+function populateVNoiseGrid(newSize = vnoiseGridSize) {
+  for (let ox = 0; ox < vnoiseGridSize; ox += vnoiseGridStep) {
     const row = vnoiseGrid[ox];
-    for(let oy=vnoiseGridSize;oy<newSize;oy+=vnoiseGridStep) {
+    for (let oy = vnoiseGridSize; oy < newSize; oy += vnoiseGridStep) {
       row.push(random());
     }
   }
@@ -21,15 +22,16 @@ function populateVNoiseGrid(newSize=vnoiseGridSize) {
 
 const smoothstep = (x) => 3 * Math.pow(x, 2) - 2 * Math.pow(x, 3);
 
-function vnoise(x=0, y=0, z=0) {
+function vnoise(...coords) {
+  const [x, y] = coords;
   const xi = x / vnoiseGridStep;
   const yi = y / vnoiseGridStep;
   const x1 = floor(xi);
-  const x2 = floor(xi+1);
+  const x2 = floor(xi + 1);
   const y1 = floor(yi);
-  const y2 = floor(yi+1);
-  if(x2>=vnoiseGridSize||y2>=vnoiseGridSize) {
-    populateVNoiseGrid(max(x2,y2)+1);
+  const y2 = floor(yi + 1);
+  if (x2 >= vnoiseGridSize || y2 >= vnoiseGridSize) {
+    populateVNoiseGrid(max(x2, y2) + 1);
   }
   const v1 = vnoiseGrid[x1][y1];
   const v2 = vnoiseGrid[x2][y1];
