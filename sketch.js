@@ -1,21 +1,22 @@
 const vnoiseGridStep = 1;
 // Currently can not be changed
 const vnoiseGridDims = 3;
-let vnoiseGridSize = 0;
+const vnoiseGridSizes = Array(vnoiseGridDims).fill(0);
 const vnoiseGrid = [];
 
 function populateVNoiseGrid(
-  size = vnoiseGridSize,
+  sizes = vnoiseGridSizes,
   dims = vnoiseGridDims,
   subgrid = vnoiseGrid
 ) {
+  const size = sizes[0];
   for (let i = 0; i < size; i++) {
     if (i < subgrid.length) {
       if (dims <= 1) continue;
-      populateVNoiseGrid(size, dims - 1, subgrid[i]);
+      populateVNoiseGrid(sizes.slice(1), dims - 1, subgrid[i]);
     } else {
       subgrid.push(
-        dims > 1 ? populateVNoiseGrid(size, dims - 1, []) : random()
+        dims > 1 ? populateVNoiseGrid(sizes.slice(1), dims - 1, []) : random()
       );
     }
   }
@@ -34,8 +35,9 @@ function sampleGrid(
   const i1 = floor(coord);
   const i2 = floor(coord + 1);
   const lerpAmount = smoothstep(fract(coord));
-  if (i2 >= vnoiseGridSize) {
-    populateVNoiseGrid(i2 + 1);
+  if (i2 >= vnoiseGridSizes[location.length]) {
+    vnoiseGridSizes[location.length] = i2 + 1;
+    populateVNoiseGrid();
     subgrid = vnoiseGrid;
     for (const i of location) {
       subgrid = subgrid[i];
