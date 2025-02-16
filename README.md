@@ -1,0 +1,1 @@
+A value noise generator for infinite dimensions and size, memory permitting. I use this in my generative art when I don't need the properties of Perlin noise, and want uniformly distributed noise that isn't just standard Pseudorandom noise.
